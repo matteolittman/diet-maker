@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriPlan AI - Personalized Diet Planning</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-light: #60ad5e;
+            --primary-dark: #005005;
+            --accent: #ff6f00;
+            --text: #212121;
+            --text-light: #757575;
+            --background: #f5f5f5;
+            --card: #ffffff;
+            --border: #e0e0e0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            text-align: center;
+            background-color: var(--primary-light);
+            color: white;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background-color: var(--card);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--accent);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #ff8f00;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .meal-plan {
+            margin-top: 2rem;
+        }
+        
+        .day-card {
+            background-color: var(--card);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .meal {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .meal:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .meal h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .grocery-list {
+            list-style-type: none;
+        }
+        
+        .grocery-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .grocery-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .store-card {
+            background-color: var(--card);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .store-info {
+            flex: 1;
+        }
+        
+        .store-price {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+        
+        .progress-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem 0;
+            flex-direction: column;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            background-color: var(--border);
+            border-radius: 4px;
+            height: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .nutrition-summary {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+        
+        .nutrition-item {
+            background-color: var(--card);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 1rem;
+            margin: 0.5rem;
+            min-width: 150px;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .nutrition-item h4 {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .nutrition-item p {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        footer {
+            background-color: var(--primary-dark);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        
+        .footer-links a {
+            color: white;
+            margin: 0 1rem;
+            text-decoration: none;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                padding: 0.5rem 1rem;
+            }
+            
+            .store-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .store-price {
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>NutriPlan AI</h1>
+            <p>Personalized Diet Plans Based on Your Needs and Budget</p>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Your Personalized Nutrition Journey Starts Here</h1>
+            <p>Our AI creates customized 2-week meal plans tailored to your age, weight, goals, and budget. Get a shopping list with local store prices to make healthy eating affordable and easy.</p>
+            <a href="#get-started" class="btn">Create Your Plan Now</a>
+        </div>
+    </section>
+
+    <section class="container" id="get-started">
+        <div class="card">
+            <h2>Create Your Personalized Diet Plan</h2>
+            <p>Fill in your details below and our AI will generate a 2-week meal plan designed specifically for you.</p>
+            
+            <form id="dietForm">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" class="form-control" placeholder="Enter your name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" class="form-control" placeholder="Enter your age">
+                </div>
+                
+                <div class="form-group">
+                    <label for="weight">Weight (lbs)</label>
+                    <input type="number" id="weight" class="form-control" placeholder="Enter your weight in pounds">
+                </div>
+                
+                <div class="form-group">
+                    <label for="height">Height (inches)</label>
+                    <input type="number" id="height" class="form-control" placeholder="Enter your height in inches">
+                </div>
+                
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" class="form-control">
+                        <option value="">Select gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="activityLevel">Activity Level</label>
+                    <select id="activityLevel" class="form-control">
+                        <option value="">Select activity level</option>
+                        <option value="sedentary">Sedentary (little or no exercise)</option>
+                        <option value="light">Lightly active (light exercise 1-3 days/week)</option>
+                        <option value="moderate">Moderately active (moderate exercise 3-5 days/week)</option>
+                        <option value="active">Active (hard exercise 6-7 days/week)</option>
+                        <option value="very">Very active (very hard exercise, physical job or training twice a day)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="goal">Goal</label>
+                    <select id="goal" class="form-control">
+                        <option value="">Select your goal</option>
+                        <option value="lose">Lose weight</option>
+                        <option value="maintain">Maintain weight</option>
+                        <option value="gain">Gain weight</option>
+                        <option value="muscle">Build muscle</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dietPreference">Dietary Preference</label>
+                    <select id="dietPreference" class="form-control">
+                        <option value="">Select dietary preference</option>
+                        <option value="standard">Standard (No Restrictions)</option>
+                        <option value="vegetarian">Vegetarian</option>
+                        <option value="vegan">Vegan</option>
+                        <option value="pescatarian">Pescatarian</option>
+                        <option value="keto">Keto</option>
+                        <option value="paleo">Paleo</option>
+                        <option value="mediterranean">Mediterranean</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="allergies">Allergies/Foods to Avoid (comma separated)</label>
+                    <input type="text" id="allergies" class="form-control" placeholder="e.g., peanuts, shellfish, dairy">
+                </div>
+                
+                <div class="form-group">
+                    <label for="zipcode">Zipcode (for local grocery stores)</label>
+                    <input type="text" id="zipcode" class="form-control" placeholder="Enter your zipcode">
+                </div>
+                
+                <div class="form-group">
+                    <label for="budget">2-Week Grocery Budget ($)</label>
+                    <input type="number" id="budget" class="form-control" placeholder="Enter your budget for 2 weeks">
+                </div>
+                
+                <button type="submit" class="btn btn-primary" id="generatePlanBtn">Generate My Diet Plan</button>
+            </form>
+        </div>
+        
+        <div id="loadingSection" style="display: none;">
+            <div class="progress-container">
+                <div class="spinner"></div>
+                <p>Your AI nutritionist is creating your personalized meal plan...</p>
+                <div class="progress-bar">
+                    <div class="progress" id="planProgress"></div>
+                </div>
+                <p id="progressText">Analyzing your nutritional needs...</p>
+            </div>
+        </div>
+        
+        <div id="resultsSection" style="display: none;">
+            <div class="tabs">
+                <div class="tab active" data-tab="meal-plan">Meal Plan</div>
+                <div class="tab" data-tab="shopping-list">Shopping List</div>
+                <div class="tab" data-tab="grocery-stores">Local Grocery Stores</div>
+                <div class="tab" data-tab="nutrition">Nutrition Summary</div>
+            </div>
+            
+            <div id="meal-plan" class="tab-content active">
+                <h3>Your 2-Week Meal Plan</h3>
+                <p>Tailored to your needs and preferences. This plan is designed to help you reach your goals while staying within your budget.</p>
+                
+                <div class="nutrition-summary">
+                    <div class="nutrition-item">
+                        <h4>Daily Calories</h4>
+                        <p id="dailyCalories">2,100</p>
+                    </div>
+                    <div class="nutrition-item">
+                        <h4>Protein</h4>
+                        <p id="dailyProtein">130g</p>
+                    </div>
+                    <div class="nutrition-item">
+                        <h4>Carbs</h4>
+                        <p id="dailyCarbs">210g</p>
+                    </div>
+                    <div class="nutrition-item">
+                        <h4>Fat</h4>
+                        <p id="dailyFat">70g</p>
+                    </div>
+                </div>
+                
+                <div class="meal-plan" id="mealPlanContainer">
+                    <!-- Meal plan content will be inserted here -->
+                </div>
+            </div>
+            
+            <div id="shopping-list" class="tab-content">
+                <h3>Shopping List</h3>
+                <p>Everything you need for your 2-week meal plan. We've organized it by category to make shopping easier.</p>
+                
+                <div class="card">
+                    <h4>Total Estimated Cost: <span id="totalCost">$120.45</span></h4>
+                    <p>This fits within your budget of $<span id="budgetDisplay">150</span></p>
+                    
+                    <div class="form-group">
+                        <label for="sortBy">Sort By:</label>
+                        <select id="sortBy" class="form-control">
+                            <option value="category">Category</option>
+                            <option value="name">Name</option>
+                            <option value="price">Price (high to low)</option>
+                        </select>
+                    </div>
+                    
+                    <ul class="grocery-list" id="groceryListContainer">
+                        <!-- Shopping list will be inserted here -->
+                    </ul>
+                </div>
+            </div>
+            
+            <div id="grocery-stores" class="tab-content">
+                <h3>Local Grocery Stores</h3>
+                <p>Based on your zipcode <span id="zipcodeDisplay">10001</span>, here are grocery stores where you can find items from your shopping list.</p>
+                
+                <div id="storesContainer">
+                    <!-- Store information will be inserted here -->
+                </div>
+            </div>
+            
+            <div id="nutrition" class="tab-content">
+                <h3>Nutrition Summary</h3>
+                <p>Your personalized meal plan provides balanced nutrition that aligns with your goals.</p>
+                
+                <div class="card">
+                    <h4>Daily Macronutrient Breakdown</h4>
+                    <div class="nutrition-summary">
+                        <div class="nutrition-item">
+                            <h4>Protein</h4>
+                            <p id="proteinPercent">25%</p>
+                        </div>
+                        <div class="nutrition-item">
+                            <h4>Carbs</h4>
+                            <p id="carbsPercent">50%</p>
+                        </div>
+                        <div class="nutrition-item">
+                            <h4>Fat</h4>
+                            <p id="fatPercent">25%</p>
+                        </div>
+                    </div>
+                    
+                    <h4>Weekly Average Nutrition Facts</h4>
+                    <div class="nutrition-summary">
+                        <div class="nutrition-item">
+                            <h4>Fiber</h4>
+                            <p id="fiberAmount">25g</p>
+                        </div>
+                        <div class="nutrition-item">
+                            <h4>Sugar</h4>
+                            <p id="sugarAmount">30g</p>
+                        </div>
+                        <div class="nutrition-item">
+                            <h4>Sodium</h4>
+                            <p id="sodiumAmount">2,300mg</p>
+                        </div>
+                        <div class="nutrition-item">
+                            <h4>Calcium</h4>
+                            <p id="calciumAmount">1,000mg</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>© 2025 NutriPlan AI. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">About</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and tab contents
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+        
+        // Form submission
+        document.getElementById('dietForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const weight = document.getElementById('weight').value;
+            const height = document.getElementById('height').value;
+            const gender = document.getElementById('gender').value;
+            const activityLevel = document.getElementById('activityLevel').value;
+            const goal = document.getElementById('goal').value;
+            const dietPreference = document.getElementById('dietPreference').value;
+            const allergies = document.getElementById('allergies').value;
+            const zipcode = document.getElementById('zipcode').value;
+            const budget = document.getElementById('budget').value;
+            
+            // Validate form
+            if (!name || !age || !weight || !height || !gender || !activityLevel || !goal || !dietPreference || !zipcode || !budget) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Show loading section
+            document.getElementById('loadingSection').style.display = 'block';
+            document.getElementById('dietForm').parentElement.style.display = 'none';
+            
+            // Simulate API call with progress
+            simulateProgress();
+            
+            // In a real application, you would call your backend API here
+            // For demo purposes, we'll use setTimeout to simulate server response
+            setTimeout(generateMockData, 5000);
+        });
+        
+        function simulateProgress() {
+            let progress = 0;
+            const progressBar = document.getElementById('planProgress');
+            const progressText = document.getElementById('progressText');
+            
+            const progressSteps = [
+                "Analyzing your nutritional needs...",
+                "Calculating optimal calorie intake...",
+                "Matching foods to your preferences...",
+                "Creating balanced meal combinations...",
+                "Generating your 2-week plan...",
+                "Checking local grocery stores...",
+                "Optimizing for your budget...",
+                "Finalizing your personalized plan..."
+            ];
+            
+            const interval = setInterval(() => {
+                progress += 5;
+                
+                if (progress <= 100) {
+                    progressBar.style.width = progress + '%';
+                    
+                    if (progress % 12 === 0 && progress < 96) {
+                        const stepIndex = Math.floor(progress / 12) - 1;
+                        if (stepIndex >= 0 && stepIndex < progressSteps.length) {
+                            progressText.textContent = progressSteps[stepIndex];
+                        }
+                    }
+                    
+                    if (progress === 100) {
+                        progressText.textContent = "Plan ready! Loading results...";
+                    }
+                } else {
+                    clearInterval(interval);
+                }
+            }, 200);
+        }
+        
+        function generateMockData() {
+            // This function simulates the API response with mock data
+            // In a real application, this would come from your backend
+            
+            // Display results section
+            document.getElementById('loadingSection').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            // Set display values from form
+            document.getElementById('budgetDisplay').textContent = document.getElementById('budget').value;
+            document.getElementById('zipcodeDisplay').textContent = document.getElementById('zipcode').value;
+            
+            // Generate mock meal plan
+            generateMockMealPlan();
+            
+            // Generate mock shopping list
+            generateMockShoppingList();
+            
+            // Generate mock store data
+            generateMockStores();
+            
+            // Setup nutrition data
+            setupNutritionData();
+        }
+        
+        function generateMockMealPlan() {
+            const mealPlanContainer = document.getElementById('mealPlanContainer');
+            const goalType = document.getElementById('goal').value;
+            
+            const dietPreference = document.getElementById('dietPreference').value;
+            
+            // Calculate daily calories based on form inputs
+            let baseCals = 2000;
+            if (document.getElementById('gender').value === 'male') {
+                baseCals = 2500;
+            }
+            
+            // Adjust calories based on goal
+            let dailyCals = baseCals;
+            if (goalType === 'lose') {
+                dailyCals = baseCals - 500;
+            } else if (goalType === 'gain' || goalType === 'muscle') {
+                dailyCals = baseCals + 500;
+            }
+            
+            // Set nutrition summary
+            document.getElementById('dailyCalories').textContent = dailyCals;
+            
+            // Generate protein based on goal
+            let proteinGrams = Math.round(dailyCals * 0.25 / 4);
+            if (goalType === 'muscle') {
+                proteinGrams = Math.round(dailyCals * 0.3 / 4);
+            }
+            document.getElementById('dailyProtein').textContent = proteinGrams + 'g';
+            
+            // Generate carbs and fat
+            let carbGrams = Math.round(dailyCals * 0.5 / 4);
+            let fatGrams = Math.round(dailyCals * 0.25 / 9);
+            
+            if (dietPreference === 'keto') {
+                carbGrams = Math.round(dailyCals * 0.1 / 4);
+                fatGrams = Math.round(dailyCals * 0.65 / 9);
+            }
+            
+            document.getElementById('dailyCarbs').textContent = carbGrams + 'g';
+            document.getElementById('dailyFat').textContent = fatGrams + 'g';
+            
+            // Create meal templates based on diet preference
+            let breakfastOptions, lunchOptions, dinnerOptions, snackOptions;
+            
+            // Standard diet meal options
+            if (dietPreference === 'standard' || dietPreference === '') {
+                breakfastOptions = [
+                    "Oatmeal with berries and honey",
+                    "Scrambled eggs with whole grain toast",
+                    "Greek yogurt with granola and fruit",
+                    "Protein smoothie with banana and spinach",
+                    "Avocado toast with poached eggs",
+                    "Breakfast burrito with eggs and vegetables",
+                    "Whole grain pancakes with fresh fruit"
+                ];
+                
+                lunchOptions = [
+                    "Grilled chicken salad with mixed greens",
+                    "Turkey sandwich on whole grain bread",
+                    "Quinoa bowl with roasted vegetables",
+                    "Tuna salad wrap with lettuce",
+                    "Chicken and vegetable stir fry with brown rice",
+                    "Mediterranean chickpea salad",
+                    "Beef and vegetable soup with whole grain roll"
+                ];
+                
+                dinnerOptions = [
+                    "Baked salmon with roasted vegetables",
+                    "Grilled steak with sweet potato and green beans",
+                    "Chicken breast with quinoa and broccoli",
+                    "Turkey meatballs with whole wheat pasta",
+                    "Lean beef stir fry with mixed vegetables",
+                    "Baked chicken with root vegetables",
+                    "Shrimp and vegetable stir fry with brown rice"
+                ];
+                
+                snackOptions = [
+                    "Apple with peanut butter",
+                    "Protein shake",
+                    "Greek yogurt with berries",
+                    "Handful of mixed nuts",
+                    "Carrot sticks with hummus",
+                    "String cheese and fruit",
+                    "Hard-boiled egg"
+                ];
+            }
+            // Vegetarian diet meal options
+            else if (dietPreference === 'vegetarian') {
+                breakfastOptions = [
+                    "Oatmeal with berries and honey",
+                    "Scrambled eggs with spinach and toast",
+                    "Greek yogurt with granola and fruit",
+                    "Protein smoothie with banana and almond milk",
+                    "Avocado toast with poached eggs",
+                    "Vegetable frittata with whole grain toast",
+                    "Whole grain pancakes with fresh fruit"
+                ];
+                
+                lunchOptions = [
+                    "Mediterranean salad with feta and olives",
+                    "Egg salad sandwich on whole grain bread",
+                    "Quinoa bowl with roasted vegetables",
+                    "Vegetable wrap with hummus",
+                    "Lentil soup with whole grain roll",
+                    "Mediterranean chickpea salad",
+                    "Caprese sandwich with fresh mozzarella"
+                ];
+                
+                dinnerOptions = [
+                    "Vegetable stir fry with tofu",
+                    "Eggplant parmesan with side salad",
+                    "Black bean and sweet potato tacos",
+                    "Whole wheat pasta with vegetables and cheese",
+                    "Stuffed bell peppers with quinoa and beans",
+                    "Vegetable curry with brown rice",
+                    "Mushroom risotto with garden salad"
+                ];
+                
+                snackOptions = [
+                    "Apple with peanut butter",
+                    "Protein shake with plant protein",
+                    "Greek yogurt with berries",
+                    "Handful of mixed nuts",
+                    "Carrot sticks with hummus",
+                    "String cheese and fruit",
+                    "Roasted chickpeas"
+                ];
+            }
+            // Vegan diet meal options
+            else if (dietPreference === 'vegan') {
+                breakfastOptions = [
+                    "Oatmeal with berries and maple syrup",
+                    "Tofu scramble with vegetables",
+                    "Chia seed pudding with coconut milk",
+                    "Green smoothie with banana and spinach",
+                    "Avocado toast with nutritional yeast",
+                    "Overnight oats with almond milk and fruit",
+                    "Whole grain toast with almond butter
